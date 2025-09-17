@@ -29,7 +29,7 @@ def call_pi_api(data: dict = {}) -> dict:
     try:
         pi_url = os.environ.get("PI_URL", "http://192.168.1.32:8000")
         url = f"{pi_url}/turn_on_computer"
-        response = requests.post(url, json=data, timeout=30)
+        response = requests.post(url, json=data, timeout=180)
         response.raise_for_status()
         return {"status": "success", "data": response.json()}
     except Exception as e:
