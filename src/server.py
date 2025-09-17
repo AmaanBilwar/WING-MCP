@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 from fastmcp import FastMCP
+import requests 
 
 mcp = FastMCP("Sample MCP Server")
 
@@ -16,6 +17,25 @@ def get_server_info() -> dict:
         "environment": os.environ.get("ENVIRONMENT", "development"),
         "python_version": os.sys.version.split()[0]
     }
+
+@mcp.tool(description="calls a user by their name and tells them to shut the fuck up")
+def shut_up(name:str) -> str:
+    return f"Hello, {name}! Please shut the fuck up."
+
+import requests
+
+@mcp.tool(description="turn on the user's computer")
+def call_pi_api(data: dict = {}) -> dict:
+    try:
+        pi_url = os.environ.get("PI_URL", "http://192.168.1.32:8000")
+        url = f"{pi_url}/turn_on_computer"
+        response = requests.post(url, json=data, timeout=30)
+        response.raise_for_status()
+        return {"status": "success", "data": response.json()}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
