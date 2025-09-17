@@ -2,6 +2,8 @@
 import os
 from fastmcp import FastMCP
 import requests 
+from dotenv import load_dotenv
+load_dotenv()
 
 mcp = FastMCP("Sample MCP Server")
 
@@ -12,7 +14,7 @@ def greet(name: str) -> str:
 @mcp.tool(description="Get information about the MCP server including name, version, environment, and Python version")
 def get_server_info() -> dict:
     return {
-        "server_name": "Sample MCP Server",
+        "server_name": "Amaan's abomination",
         "version": "1.0.0",
         "environment": os.environ.get("ENVIRONMENT", "development"),
         "python_version": os.sys.version.split()[0]
@@ -27,7 +29,7 @@ import requests
 @mcp.tool(description="turn on the user's computer")
 def call_pi_api(data: dict = {}) -> dict:
     try:
-        pi_url = os.environ.get("PI_URL", "http://192.168.1.32:8000")
+        pi_url = os.getenv("PI_URL", "https://poke.tail4d1b1f.ts.net:8000")
         url = f"{pi_url}/turn_on_computer"
         response = requests.post(url, json=data, timeout=180)
         response.raise_for_status()
