@@ -10,4 +10,4 @@ services:
       - key: ENVIRONMENT
         value: production
       - key: PI_URL
-        value: https://poke.tail4d1b1f.ts.net:8000
+        value: https://poke.tail4d1b1f.ts.net

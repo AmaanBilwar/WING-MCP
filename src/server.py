@@ -29,7 +29,7 @@ import requests
 @mcp.tool(description="turn on the user's computer")
 def call_pi_api(data: dict = {}) -> dict:
     try:
-        pi_url = os.getenv("PI_URL", "https://poke.tail4d1b1f.ts.net:8000")
+        pi_url = os.getenv("PI_URL", "https://poke.tail4d1b1f.ts.net")
         url = f"{pi_url}/turn_on_computer"
         response = requests.post(url, json=data, timeout=180)
         response.raise_for_status()
