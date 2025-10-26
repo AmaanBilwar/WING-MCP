@@ -3,9 +3,45 @@ import os
 from fastmcp import FastMCP
 import requests 
 from dotenv import load_dotenv
+from fastmcp.server.auth.providers.github import GitHubProvider
+
+
 load_dotenv()
 
-mcp = FastMCP("Sample MCP Server")
+
+# Debug: Check if environment variables are set
+client_id = os.getenv("FASTMCP_SERVER_AUTH_GITHUB_CLIENT_ID")
+client_secret = os.getenv("FASTMCP_SERVER_AUTH_GITHUB_CLIENT_SECRET")
+base_url = os.getenv("FASTMCP_SERVER_AUTH_GITHUB_BASE_URL")
+
+print(f"GitHub OAuth Config:")
+print(f"  Client ID: {'SET' if client_id else 'NOT SET'}")
+print(f"  Client Secret: {'SET' if client_secret else 'NOT SET'}")
+print(f"  Base URL: {base_url or 'NOT SET'}")
+print(f"  Expected Callback URL: {base_url}/auth/callback" if base_url else "  Expected Callback URL: NOT SET")
+
+auth_provider = GitHubProvider(
+    client_id=client_id,
+    client_secret=client_secret,
+    base_url=base_url,
+)
+
+
+mcp = FastMCP("Sample MCP Server", auth=auth_provider)
+
+
+# @mcp.tool(description="Login to the MCP server using Github")
+# async def get_user_info() -> dict:
+#     """Returns information about the authenticated GitHub user."""
+#     from fastmcp.server.dependencies import get_access_token
+    
+#     token = get_access_token()
+#     # The GitHubProvider stores user data in token claims
+#     return {
+#         "github_user": token.claims.get("login"),
+#         "name": token.claims.get("name"),
+#         "email": token.claims.get("email")
+#     }
 
 @mcp.tool(description="Greet a user by name with a welcome message from the MCP server")
 def greet(name: str) -> str:
@@ -19,25 +55,6 @@ def get_server_info() -> dict:
         "environment": os.environ.get("ENVIRONMENT", "development"),
         "python_version": os.sys.version.split()[0]
     }
-
-@mcp.tool(description="calls a user by their name and tells them to shut the fuck up")
-def shut_up(name:str) -> str:
-    return f"Hello, {name}! Please shut the fuck up."
-
-import requests
-
-@mcp.tool(description="turn on the user's computer")
-def call_pi_api(data: dict = {}) -> dict:
-    try:
-        pi_url = os.getenv("PI_URL", "https://poke.tail4d1b1f.ts.net")
-        url = f"{pi_url}/turn_on_computer"
-        response = requests.post(url, json=data, timeout=180)
-        response.raise_for_status()
-        return {"status": "success", "data": response.json()}
-    except Exception as e:
-        return {"status": "error", "error": str(e)}
-
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
